@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.site.mapper.EventMapper">
+<select id="selectEvent_CommentCount" resultType="int">
+	select count(*) from commentBoard where bid=#{bid}
+</select>
+
+<select id="selectEvent_CommentList" resultType="com.site.dto.CommentDto">
+	select * from commentBoard where bid=#{bid} order by commentNo desc
+</select>
+
+<!-- 댓글삭제버튼클릭 -->
+<delete id="deleteComment">
+	delete commentBoard where commentNo=#{commentNo}
+</delete>
+
+
+<!-- 댓글수정저장버튼클릭  -->
+<update id="updateCommentUpdate">
+	update commentBoard set commentContent=#{commentContent},
+	commentDate=sysdate where commentNo=#{commentNo} 
+</update>
+
+	
+  <!-- reply -->
+  <insert id="insertCommentWrite">
+  <!-- 여기서 commentNo는 db의 commentNo이 아니라 dto의 commentNo임 -->
+  <!-- 따라서 commentNo이라는 키 값으로 값을 받게되면 보내온 dto가 수정됨 -->
+  <!-- 이게 리턴을 안해줬지만 commentDto객체의 주소를 통해서 수정했다고 생각이 들고 -->
+  <!-- 이과정이후의 commentDto는 다른Dto가 되는것이라고 이해가됨 -->
+	  <selectKey resultType="int" keyProperty="commentNo" order="BEFORE" >
+		      SELECT COM_SEQ.NEXTVAL FROM DUAL
+	  </selectKey>
+  
+  
+  	insert into commentBoard values(
+  	#{commentNo},#{bid},#{id},#{commentPw},#{commentContent},sysdate)
+  	
+  </insert>
+  <select id="selectCommentWrite" resultType="com.site.dto.CommentDto">
+  	select * from commentBoard where commentNo=#{commentNo}
+  
+  </select>
+  
+</mapper>

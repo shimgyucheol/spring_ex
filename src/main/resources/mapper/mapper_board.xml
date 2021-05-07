@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.site.mapper.BoardMapper">
+
+  <!-- delete -->
+  <delete id="deleteBoardDelete">
+		delete notice_board where bid=#{bid}
+  </delete>
+
+  
+    <!-- reply -->
+  <insert id="insertBoardReply">
+  	<![CDATA[
+  	insert into notice_board values(
+  	board_seq.nextval,#{bname},#{btitle},#{bcontent},
+  	sysdate,0,#{bgroup},#{bstep}+1,#{bindent}+1,#{fileName})
+	]]>
+  
+  </insert>
+  
+  <!-- replyPlus -->
+  <update id="insertBoardReplyPlus">
+  	<![CDATA[
+  	update notice_board set bstep=bstep+1
+  	where bgroup=#{bgroup} and bstep>#{bstep}
+	]]>
+  
+  </update>
+  
+  
+  <!-- content_view -->
+  <select id="selectBoardContent_view" resultType="com.site.dto.BoardDto">
+		select * from notice_board where bid=#{bid}
+  </select>
+  <!-- selectUpHit -->
+  <update id="selectUpHit">
+		update notice_board set bhit=bhit+1 where bid=#{bid}
+  </update>
+    <!-- 이전글 데이터 -->
+  <select id="selectBoard_pre" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+		select * from (select rownum rnum,a.*  from
+		(select * from notice_board order by bgroup desc, bstep asc) a)
+		where rnum=
+		(select rnum from (select rownum rnum,a.*  from
+		(select * from notice_board order by bgroup desc, bstep asc) a) 
+		where bid=#{bid})-1
+	]]>
+  </select>
+    <!-- 다음글 데이터 -->
+  <select id="selectBoard_next" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+		select * from (select rownum rnum,a.*  from
+		(select * from notice_board order by bgroup desc, bstep asc) a)
+		where rnum=
+		(select rnum from (select rownum rnum,a.*  from
+		(select * from notice_board order by bgroup desc, bstep asc) a) 
+		where bid=#{bid})+1
+	]]>
+  </select>
+  
+    <!-- 이전글데이터 title검색  -->
+<select id="selectBoard_preTitle" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum=
+	(select rnum from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where bid=#{bid})-1
+	]]>
+	
+  </select>
+  <!-- 다음글데이터 title검색  -->
+<select id="selectBoard_nextTitle" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum=
+	(select rnum from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where bid=#{bid})+1
+	]]>
+	
+  </select>
+  
+  
+    <!-- 이전글데이터 content검색  -->
+<select id="selectBoard_preContent" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum=
+	(select rnum from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where bid=#{bid})-1
+	]]>
+	
+  </select>
+  <!-- 다음글데이터 content검색  -->
+<select id="selectBoard_nextContent" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum=
+	(select rnum from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where bid=#{bid})+1
+	]]>
+	
+  </select>
+    <!-- 이전글데이터 all검색  -->
+<select id="selectBoard_preAll" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%' or bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum=
+	(select rnum from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%' or bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where bid=#{bid})-1
+	]]>
+	
+  </select>
+  <!-- 다음글데이터 all검색  -->
+<select id="selectBoard_nextAll" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%' or bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum=
+	(select rnum from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%' or bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where bid=#{bid})+1
+	]]>
+	
+  </select>
+ 
+  <!-- content_view 끝 -->
+  
+  
+  
+  
+  
+  <!-- update -->
+  <update id="updateBoardModify">
+  	<![CDATA[
+  	update notice_board set btitle=#{btitle},bcontent=#{bcontent},
+  	bdate=sysdate,filename=#{fileName}
+  	where bid=#{bid}
+	]]>
+  
+  </update>
+  
+  
+  <!-- write -->
+  <insert id="insertBoardWrite">
+  	<![CDATA[
+  	insert into notice_board values(
+  	board_seq.nextval,#{bname},#{btitle},#{bcontent},
+  	sysdate,0,board_seq.currval,0,0,#{fileName})
+	]]>
+  
+  </insert>
+  
+  <!-- 리스트 불러오기 시작 -->
+  <!-- 전체리스트 -->
+  <select id="selectBoardListAll" resultType="com.site.dto.BoardDto">
+	<![CDATA[select * from
+	(select rownum rnum,a.* from
+	(select * from notice_board order by bgroup desc,bstep asc) a)
+	where rnum>=#{startrow} and rnum<=#{endrow}
+	]]>
+  </select>
+  <!-- title검색리스트 -->
+  <select id="selectBoardListTitle" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where btitle like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum>=#{startrow} and rnum<=#{endrow}
+	]]>
+	
+  </select>
+  <select id="selectBoardListContent" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where bcontent like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum>=#{startrow} and rnum<=#{endrow}
+	]]>
+	
+  </select>
+  <select id="selectBoardListSearchAll" resultType="com.site.dto.BoardDto">
+	<![CDATA[
+	select * from 
+	(select rownum rnum,a.* from 
+	(select * from notice_board where bcontent like '%'||#{search}||'%' or btitle like '%'||#{search}||'%'
+	order by bgroup desc,bstep asc) a)
+	where rnum>=#{startrow} and rnum<=#{endrow}
+	]]>
+	
+  </select>
+  <!-- 리스트 불러오기 끝 -->
+  
+  <!-- 전체리스트 개수 -->
+  <select id="listCount" resultType="int">
+  	select count(*) from notice_board
+  </select>
+  <!-- title 검색 개수 -->
+  <select id="listCountTitle" resultType="int">
+  	select count(*) from notice_board where btitle like '%'||#{search}||'%'
+  </select>
+  <select id="listCountContent" resultType="int">
+  	select count(*) from notice_board where bcontent like '%'||#{search}||'%'
+  </select>
+  <select id="listCountSearchAll" resultType="int">
+  	select count(*) from notice_board where bcontent like '%'||#{search}||'%' or btitle like '%'||#{search}||'%'
+  </select>
+  
+  
+</mapper>
